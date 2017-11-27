@@ -19,11 +19,11 @@ app.post('/webhook', function (req, res) {
 
   if (req.body.object === 'page') {
 
-    req.body.entry.forEach(function(entry) {
+    // req.body.entry.forEach(function(entry) {
 
-      var webhookEvent = entry.messaging[0];
-      res.send(webhookEvent);
-    });
+    //   var webhookEvent = entry.messaging[0];
+    //   res.send(webhookEvent);
+    // });
 
     res.status(200).send('EVENT_RECEIVED');
   } else {
