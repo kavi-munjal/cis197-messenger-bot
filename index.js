@@ -1,15 +1,20 @@
-'use strict';
-
 // Imports dependencies and set up http server
 var express = require('express');
-var bodyParser = require('body-parser');
 var app = express(); // creates express http server
+var bodyParser = require('body-parser');
 
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, function () { 
 	console.log('webhook is listening')
+});
+
+
+// Server index page
+app.get("/", function (req, res) {
+  res.send("Deployed!");
 });
 
 
@@ -39,30 +44,26 @@ app.post('/webhook', function (req, res) {
 
 
 // Adds support for GET requests to our webhook
-app.get('/webhook', (req, res) => {
+app.get('/webhook', function (req, res) {
 
   // Your verify token. Should be a random string.
-  var VERIFY_TOKEN = "<YOUR_VERIFY_TOKEN>"
+  // var VERIFY_TOKEN = "KAVI"
     
   // Parse the query params
   var mode = req.query['hub.mode'];
   var token = req.query['hub.verify_token'];
   var challenge = req.query['hub.challenge'];
-    
-  // Checks if a token and mode is in the query string of the request
-  if (mode && token) {
   
-    // Checks the mode and token sent is correct
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      
-      // Responds with the challenge token from the request
-      console.log('WEBHOOK_VERIFIED');
-      res.status(200).send(challenge);
+  // Checks the mode and token sent is correct
+  if (mode === 'subscribe' && token === process.env.VERIFICATION_TOKEN) {
     
-    } else {
-      // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);      
-    }
+    // Responds with the challenge token from the request
+    console.log('WEBHOOK_VERIFIED');
+    res.status(200).send(challenge);
+    
+  } else {
+    // Responds with '403 Forbidden' if verify tokens do not match
+    res.sendStatus(403);      
   }
 });
 
