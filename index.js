@@ -11,8 +11,8 @@ app.listen(process.env.PORT || 1337, function () {
 });
 
 
-app.get("/", function (req, res) {
-  res.send("Deployed!");
+app.get('/', function (req, res) {
+  res.send('Deployed!');
 });
 
 
@@ -20,44 +20,75 @@ var processPostback = function (event) {
   var senderId = event.sender.id;
   var payload = event.postback.payload;
 
-  if (payload === "Greeting") {
+  if (payload === 'Greeting') {
     // Get user's first name from the User Profile API
     // and include it in the greeting
     request({
-      url: "https://graph.facebook.com/v2.6/" + senderId,
+      url: 'https://graph.facebook.com/v2.6/' + senderId,
       qs: {
         access_token: process.env.PAGE_ACCESS_TOKEN,
-        fields: "first_name"
+        fields: 'first_name'
       },
-      method: "GET"
+      method: 'GET'
     }, function (error, response, body) {
-      var greeting = "";
+      var greeting = '';
       if (error) {
         console.log("Error getting user's name: " +  error);
       } else {
         var bodyObj = JSON.parse(body);
         name = bodyObj.first_name;
-        greeting = "Hi " + name + ". ";
+        greeting = 'Hi ' + name + '. ';
       }
-      var message = greeting + "My name is SP Movie Bot. I can tell you various details regarding movies. What movie would you like to know about?";
-      sendMessage(senderId, {text: message});
+      var message = greeting + 'My name is Roommate Bot. I can help you and your roomies';
+      sendMessage(senderId, { text: message });
     });
+  }
+}
+
+function processMessage(event) {
+  if (!event.message.is_echo) {
+    var message = event.message;
+    var senderId = event.sender.id;
+
+    console.log('Received message from senderId: ' + senderId);
+    console.log('Message is: ' + JSON.stringify(message));
+
+    // You may get a text or attachment but not both
+    if (message.text) {
+      var formattedMsg = message.text.toLowerCase().trim();
+
+      switch (formattedMsg) {
+        case 'bills':
+        case 'calendar':
+        case 'create bill':
+        case 'create event':
+          // getMovieDetail(senderId, formattedMsg);
+          sendMessage(senderId, { text: "keyword detected!"} );
+          break;
+
+        default:
+          // findMovie(senderId, formattedMsg);
+          sendMessage(senderId, { text: "default"} );
+      }
+    } else if (message.attachments) {
+      sendMessage(senderId, { text: "Sorry, I don't understand your request."} );
+    }
   }
 }
 
 // sends message to user
 var sendMessage = function (recipientId, message) {
   request({
-    url: "https://graph.facebook.com/v2.6/me/messages",
-    qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-    method: "POST",
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+    method: 'POST',
     json: {
-      recipient: {id: recipientId},
+      recipient: { id: recipientId },
       message: message,
     }
-  }, function(error, response, body) {
+  }, function (error, response, body) {
     if (error) {
-      console.log("Error sending message: " + response.error);
+      console.log('Error sending message: ' + response.error);
     }
   });
 }
@@ -72,6 +103,8 @@ app.post('/webhook', function (req, res) {
       entry.messaging.forEach(function (event) {
         if (event.postback) {
           processPostback(event);
+        } else if (event.message) {
+          processMessage(event);
         }
       });
     });
@@ -84,7 +117,7 @@ app.post('/webhook', function (req, res) {
 
 app.get('/webhook', function (req, res) {
 
-  // var VERIFY_TOKEN = "KAVI"
+  // var VERIFY_TOKEN = 'KAVI'
     
   var mode = req.query['hub.mode'];
   var token = req.query['hub.verify_token'];
