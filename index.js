@@ -18,7 +18,6 @@ app.get("/", function (req, res) {
 var processPostback = function (event) {
   var senderId = event.sender.id;
   var payload = event.postback.payload;
-  res.send("processed");
 
   if (payload === "Greeting") {
     // Get user's first name from the User Profile API
