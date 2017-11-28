@@ -15,6 +15,13 @@ app.get("/", function (req, res) {
 });
 
 
+// var processPostback = function (event) {
+//   var senderId = event.sender.id;
+//   var payload = event.postback.payload;
+//   res.send("processed");
+// }
+
+
 app.post('/webhook', function (req, res) {  
 
   if (req.body.object === 'page') {
@@ -23,7 +30,9 @@ app.post('/webhook', function (req, res) {
 
       entry.messaging.forEach(function (event) {
         if (event.postback) {
-          processPostback(event);
+          // processPostback(event);
+          console.log("processing");
+          res.send("processed");
         }
       }
     });
@@ -51,12 +60,5 @@ app.get('/webhook', function (req, res) {
     res.sendStatus(403);      
   }
 });
-
-
-var processPostback = function (event) {
-  var senderId = event.sender.id;
-  var payload = event.postback.payload;
-  res.send("processed");
-}
 
 module.exports = app;
