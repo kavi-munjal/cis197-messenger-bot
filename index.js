@@ -34,7 +34,7 @@ app.post('/webhook', function (req, res) {
           console.log("processing");
           res.send("processed");
         }
-      }
+      });
     });
 
     res.sendStatus(200);
