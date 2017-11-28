@@ -21,17 +21,18 @@ app.post('/webhook', function (req, res) {
 
     req.body.entry.forEach(function (entry) {
 
-      var webhookEvent = entry.messaging[0];
-      res.send(webhookEvent);
+      entry.messaging.forEach(function (event) {
+        if (event.postback) {
+          processPostback(event);
+        }
+      }
     });
 
-    res.status(200).send('EVENT_RECEIVED');
+    res.sendStatus(200);
   } else {
     res.sendStatus(404);
   }
-
 });
-
 
 app.get('/webhook', function (req, res) {
 
@@ -50,5 +51,12 @@ app.get('/webhook', function (req, res) {
     res.sendStatus(403);      
   }
 });
+
+
+var processPostback = function (event) {
+  var senderId = event.sender.id;
+  var payload = event.postback.payload;
+  res.send("processed");
+}
 
 module.exports = app;
