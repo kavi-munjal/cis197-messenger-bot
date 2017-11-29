@@ -3,6 +3,8 @@ var request = require('request');
 var app = express();
 var bodyParser = require('body-parser');
 
+var billDb = require('../db/bill')
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
@@ -58,12 +60,24 @@ function processMessage(event) {
       var formattedMsg = message.text.toLowerCase().trim();
 
       switch (formattedMsg) {
-        case 'bills':
-        case 'calendar':
-        case 'create bill':
-        case 'create event':
+        case 'bills': billDb.getAllBills(function (error, bills) {
+    	  if (error !== null) {
+      	  	next(error);
+    	  } else {
+          	sendMessage(senderId, { text: bills });
+    	  }
+  		});
+        case 'calendar': sendMessage(senderId, { text: 'keyword detected!'} );
+        case 'create bill': billDb.addBill({ creator: 'Kavi', title: 'Stuff', 
+        	amount: 5, per_person: 1 }, function (err) {
+        	  if (err !== null) {
+      			next(err);
+      		  } else {
+      		  	sendMessage(senderId, { text: 'success!' });
+      		  }
+        	});
+        case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
           // getMovieDetail(senderId, formattedMsg);
-          sendMessage(senderId, { text: "keyword detected!"} );
           break;
 
         default:
