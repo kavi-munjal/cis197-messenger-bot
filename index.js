@@ -66,7 +66,7 @@ function processMessage(event) {
       	  	next(error);
       	  	sendMessage(senderID, { text: 'error'});
     	  } else {
-          	sendMessage(senderId, { text: bills });
+          	sendMessage(senderId, { text: 'bills' });
     	  }
   		});
   		sendMessage(senderId, { text: 'keyword detected!'} );
