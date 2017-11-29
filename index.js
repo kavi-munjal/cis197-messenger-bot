@@ -64,6 +64,7 @@ function processMessage(event) {
         case 'bills': billDb.getAllBills(function (error, bills) {
     	  if (error !== null) {
       	  	next(error);
+      	  	sendMessage(senderID, { text: 'error'});
     	  } else {
           	sendMessage(senderId, { text: bills });
     	  }
