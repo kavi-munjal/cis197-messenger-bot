@@ -58,10 +58,8 @@ function processMessage(event) {
     console.log('Received message from senderId: ' + senderId);
     console.log('Message is: ' + JSON.stringify(message));
 
-    // You may get a text or attachment but not both
     if (message.text) {
       if (billCreator) {
-
       	billDb.addBill(JSON.parse(message.text), function (err) {
 	      if (err !== null) {
 	      	next(err);
@@ -72,6 +70,14 @@ function processMessage(event) {
 	    });
       	billCreator = false;
       } else if (eventCreator) {
+      	eventDb.addEvent(JSON.parse(message.text), function (err) {
+	      if (err !== null) {
+	      	next(err);
+	      	sendMessage(senderID, { text: 'error'});
+	      } else {
+	      	sendMessage(senderId, { text: 'success!' });
+	      }
+	    });
       	eventCreator = false;
       } else {
       	  var formattedMsg = message.text.toLowerCase().trim();
@@ -97,15 +103,18 @@ function processMessage(event) {
 	  		sendMessage(senderId, { text: 'keyword detected!'} );
 	        break;
 	        case 'create bill':
-	        	billCreator = true;
-	        	var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
-	        	sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
+	          billCreator = true;
+	       	  var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
+	          sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
 	        break;
-	        case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
+	        case 'create event': 
+	          eventCreator = true;
+	          var form = JSON.stringify({ "creator": "", "title": "", "date": "", "time": "" });
+	       	  sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
 	          break;
 
 	        default:
-	          sendMessage(senderId, { text: "default"} );
+	          sendMessage(senderId, { text: "I'm not smart enough to respond to that... yet!"} );
 	      }
 	  }
     } else if (message.attachments) {
