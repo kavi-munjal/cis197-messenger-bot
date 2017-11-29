@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-var db = mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI);
+var db = mongoose.connection;
 
 var billSchema = new mongoose.Schema({
   creator: String,
