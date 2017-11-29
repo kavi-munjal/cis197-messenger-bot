@@ -48,6 +48,8 @@ var processPostback = function (event) {
   }
 }
 
+var billCreator = false;
+var eventCreator = false; 
 function processMessage(event) {
   if (!event.message.is_echo) {
     var message = event.message;
@@ -58,38 +60,52 @@ function processMessage(event) {
 
     // You may get a text or attachment but not both
     if (message.text) {
-      var formattedMsg = message.text.toLowerCase().trim();
+      if (billCreator) {
+      	billDb.addBill(JSON.parse(message.text), function (err) {
+	      if (err !== null) {
+	      	next(err);
+	      	sendMessage(senderID, { text: 'error'});
+	      } else {
+	      	sendMessage(senderId, { text: 'success!' });
+	      }
+	    });
+      	billCreator = false;
+      } else if (eventCreator) {
+      	eventCreator = false;
+      } else {
+      	  var formattedMsg = message.text.toLowerCase().trim();
+	      switch (formattedMsg) {
+	        case 'bills': billDb.getAllBills(function (error, bills) {
+	    	  if (error !== null) {
+	      	  	next(error);
+	      	  	sendMessage(senderID, { text: 'error'});
+	    	  } else {
+	          	sendMessage(senderId, { text: JSON.stringify(bills) });
+	    	  }
+	  		});
+	  		sendMessage(senderId, { text: 'keyword detected!'} );
+	  		break;
+	        case 'calendar': eventDb.getAllEvents(function (error, events) {
+	    	  if (error !== null) {
+	      	  	next(error);
+	      	  	sendMessage(senderID, { text: 'error'});
+	    	  } else {
+	          	sendMessage(senderId, { text: JSON.stringify(events) });
+	    	  }
+	  		});
+	  		sendMessage(senderId, { text: 'keyword detected!'} );
+	        break;
+	        case 'create bill':
+	        	billCreator = true; 
+	        	sendMessage(senderId, { text: 'add details'} );
+	        break;
+	        case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
+	          break;
 
-      switch (formattedMsg) {
-        case 'bills': billDb.getAllBills(function (error, bills) {
-    	  if (error !== null) {
-      	  	next(error);
-      	  	sendMessage(senderID, { text: 'error'});
-    	  } else {
-    	  	var message = { text: JSON.stringify(bills) };
-          	sendMessage(senderId, message);
-    	  }
-  		});
-  		sendMessage(senderId, { text: 'keyword detected!'} );
-  		break;
-        case 'calendar': sendMessage(senderId, { text: 'keyword detected!'} );
-        break;
-        case 'create bill': billDb.addBill({ creator: 'Kavi', title: 'Stuff', 
-        	amount: 5, per_person: 1 }, function (err) {
-        	  if (err !== null) {
-      			next(err);
-      		  } else {
-      		  	sendMessage(senderId, { text: 'success!' });
-      		  }
-        	});
-        	sendMessage(senderId, { text: 'keyword detected!'} );
-        break;
-        case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
-          break;
-
-        default:
-          sendMessage(senderId, { text: "default"} );
-      }
+	        default:
+	          sendMessage(senderId, { text: "default"} );
+	      }
+	  }
     } else if (message.attachments) {
       sendMessage(senderId, { text: "Sorry, I don't understand your request."} );
     }
