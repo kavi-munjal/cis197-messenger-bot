@@ -61,25 +61,25 @@ function processMessage(event) {
       var formattedMsg = message.text.toLowerCase().trim();
 
       switch (formattedMsg) {
-        case 'bills': //billDb.getAllBills(function (error, bills) {
-    // 	  if (error !== null) {
-    //   	  	next(error);
-    // 	  } else {
-    //       	sendMessage(senderId, { text: bills });
-    // 	  }
-  		// });
+        case 'bills': billDb.getAllBills(function (error, bills) {
+    	  if (error !== null) {
+      	  	next(error);
+    	  } else {
+          	sendMessage(senderId, { text: bills });
+    	  }
+  		});
   		sendMessage(senderId, { text: 'keyword detected!'} );
   		break;
         case 'calendar': sendMessage(senderId, { text: 'keyword detected!'} );
         break;
-        case 'create bill': //billDb.addBill({ creator: 'Kavi', title: 'Stuff', 
-        	// amount: 5, per_person: 1 }, function (err) {
-        	//   if (err !== null) {
-      			// next(err);
-      		 //  } else {
-      		 //  	sendMessage(senderId, { text: 'success!' });
-      		 //  }
-        	// });
+        case 'create bill': billDb.addBill({ creator: 'Kavi', title: 'Stuff', 
+        	amount: 5, per_person: 1 }, function (err) {
+        	  if (err !== null) {
+      			next(err);
+      		  } else {
+      		  	sendMessage(senderId, { text: 'success!' });
+      		  }
+        	});
         	sendMessage(senderId, { text: 'keyword detected!'} );
         break;
         case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
