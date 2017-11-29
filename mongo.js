@@ -22,6 +22,6 @@ module.exports = {
   Bill: Bill,
   Event: Event,
   mongoose: mongoose,
-  billDb: db.collection('Bills'),
-  eventDb: db.collection('Events')
+  billDb: db.collection('Bill'),
+  eventDb: db.collection('Event')
 };
