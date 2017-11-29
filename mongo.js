@@ -11,7 +11,7 @@ var billSchema = new mongoose.Schema({
 var eventSchema = new mongoose.Schema({
   creator: String,
   title: String,
-  date: String,
+  fate: String,
   time: String
 });
 
