@@ -66,7 +66,7 @@ function processMessage(event) {
       	  	next(error);
       	  	sendMessage(senderID, { text: 'error'});
     	  } else {
-    	  	var message = { text: bills };
+    	  	var message = { text: JSON.stringify(bills) };
           	sendMessage(senderId, message);
     	  }
   		});
