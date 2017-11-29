@@ -1,27 +1,27 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/cis197hw6', function (err) {
+mongoose.connect(process.env.MONGODB_URI, function (err) {
   if (err && err.message.includes('ECONNREFUSED')) {
     console.log('Error connecting to mongodb database: %s.\nIs "mongod" running?', err.message);
     process.exit(0);
   } else if (err) {
     throw err;
   } else {
-    console.log('DB successfully connected. Adding seed data...');
+    console.log('DB successfully connected');
   }
 });
-
 var db = mongoose.connection;
 
 var billSchema = new mongoose.Schema({
   creator: String,
+  title: String,
   amount: Number,
   per_person: Number
 });
 
 var eventSchema = new mongoose.Schema({
   creator: String,
-  title: String
-  date: String,
+  title: String,
+  fate: String,
   time: String
 });
 
@@ -32,5 +32,6 @@ module.exports = {
   Bill: Bill,
   Event: Event,
   mongoose: mongoose,
-  db: db.collection('Event')
+  billDb: db.collection('Bill'),
+  eventDb: db.collection('Event')
 };
