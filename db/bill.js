@@ -6,13 +6,13 @@ module.exports = {
       callback(error, event);
     });
   },
-  
+
   addBill: function (billData, callback) {
     var bill = new mongo.Bill(billData);
     bill.save(function (error) {
       callback(error);
     });
-  };
+  }
 
   // containsKey: function (apiKey, callback) {
   //   console.log('Checking if database contains key: %s', apiKey);
