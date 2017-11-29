@@ -67,7 +67,9 @@ function processMessage(event) {
           	sendMessage(senderId, { text: bills });
     	  }
   		});
+  		break;
         case 'calendar': sendMessage(senderId, { text: 'keyword detected!'} );
+        break;
         case 'create bill': billDb.addBill({ creator: 'Kavi', title: 'Stuff', 
         	amount: 5, per_person: 1 }, function (err) {
         	  if (err !== null) {
@@ -76,6 +78,7 @@ function processMessage(event) {
       		  	sendMessage(senderId, { text: 'success!' });
       		  }
         	});
+        break;
         case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
           // getMovieDetail(senderId, formattedMsg);
           break;

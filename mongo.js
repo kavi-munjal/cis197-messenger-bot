@@ -1,5 +1,14 @@
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI, function (err) {
+  if (err && err.message.includes('ECONNREFUSED')) {
+    console.log('Error connecting to mongodb database: %s.\nIs "mongod" running?', err.message);
+    process.exit(0);
+  } else if (err) {
+    throw err;
+  } else {
+    console.log('DB successfully connected');
+  }
+});
 var db = mongoose.connection;
 
 var billSchema = new mongoose.Schema({
