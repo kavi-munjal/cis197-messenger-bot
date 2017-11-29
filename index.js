@@ -61,6 +61,7 @@ function processMessage(event) {
     // You may get a text or attachment but not both
     if (message.text) {
       if (billCreator) {
+
       	billDb.addBill(JSON.parse(message.text), function (err) {
 	      if (err !== null) {
 	      	next(err);
@@ -96,8 +97,9 @@ function processMessage(event) {
 	  		sendMessage(senderId, { text: 'keyword detected!'} );
 	        break;
 	        case 'create bill':
-	        	billCreator = true; 
-	        	sendMessage(senderId, { text: 'add details'} );
+	        	billCreator = true;
+	        	var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
+	        	sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
 	        break;
 	        case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
 	          break;
