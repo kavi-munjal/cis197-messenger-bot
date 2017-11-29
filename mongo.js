@@ -3,14 +3,14 @@ var db = mongoose.connect(process.env.MONGODB_URI);
 
 var billSchema = new mongoose.Schema({
   creator: String,
-  title: String
+  title: String,
   amount: Number,
   per_person: Number
 });
 
 var eventSchema = new mongoose.Schema({
   creator: String,
-  title: String
+  title: String,
   date: String,
   time: String
 });
