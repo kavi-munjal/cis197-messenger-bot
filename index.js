@@ -66,8 +66,8 @@ function processMessage(event) {
       	  	next(error);
       	  	sendMessage(senderID, { text: 'error'});
     	  } else {
-    	  	console.log(bills);
-          	sendMessage(senderId, { text: 'bills' });
+    	  	var message = { text: bills };
+          	sendMessage(senderId, message);
     	  }
   		});
   		sendMessage(senderId, { text: 'keyword detected!'} );
