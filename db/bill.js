@@ -13,15 +13,4 @@ module.exports = {
       callback(error);
     });
   }
-
-  // containsKey: function (apiKey, callback) {
-  //   console.log('Checking if database contains key: %s', apiKey);
-  //   mongo.Key.find({key: apiKey}, function (error, result) {
-  //     if (error) {
-  //       callback(error);
-  //     } else {
-  //       callback(null, result.length > 0);
-  //     }
-  //   });
-  // }
 };

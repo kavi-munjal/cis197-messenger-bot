@@ -66,6 +66,7 @@ function processMessage(event) {
       	  	next(error);
       	  	sendMessage(senderID, { text: 'error'});
     	  } else {
+    	  	console.log(bills);
           	sendMessage(senderId, { text: 'bills' });
     	  }
   		});
@@ -84,11 +85,9 @@ function processMessage(event) {
         	sendMessage(senderId, { text: 'keyword detected!'} );
         break;
         case 'create event': sendMessage(senderId, { text: 'keyword detected!'} );
-          // getMovieDetail(senderId, formattedMsg);
           break;
 
         default:
-          // findMovie(senderId, formattedMsg);
           sendMessage(senderId, { text: "default"} );
       }
     } else if (message.attachments) {
