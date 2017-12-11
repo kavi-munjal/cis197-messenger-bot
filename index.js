@@ -42,7 +42,8 @@ var processPostback = function (event) {
         name = bodyObj.first_name;
         greeting = 'Hi ' + name + '. ';
       }
-      var message = greeting + 'My name is Roommate Bot. I can help you and your roomies';
+      var message = greeting + 'My name is Roommate Bot. I can help you and your roomies. ' + 
+      'The commands are create event, create bill, calendar, and bills';
       sendMessage(senderId, { text: message });
     });
   }
@@ -63,7 +64,7 @@ function processMessage(event) {
       	billDb.addBill(JSON.parse(message.text), function (err) {
 	      if (err !== null) {
 	      	next(err);
-	      	sendMessage(senderID, { text: 'error'});
+	      	sendMessage(senderId, { text: 'error'});
 	      } else {
 	      	sendMessage(senderId, { text: 'success!' });
 	      }
@@ -73,7 +74,7 @@ function processMessage(event) {
       	eventDb.addEvent(JSON.parse(message.text), function (err) {
 	      if (err !== null) {
 	      	next(err);
-	      	sendMessage(senderID, { text: 'error'});
+	      	sendMessage(senderId, { text: 'error'});
 	      } else {
 	      	sendMessage(senderId, { text: 'success!' });
 	      }
@@ -85,22 +86,21 @@ function processMessage(event) {
 	        case 'bills': billDb.getAllBills(function (error, bills) {
 	    	  if (error !== null) {
 	      	  	next(error);
-	      	  	sendMessage(senderID, { text: 'error'});
+	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
-	          	sendMessage(senderId, { text: JSON.stringify(bills) });
+	          	// sendMessage(senderId, { text: JSON.stringify(bills) });
+	          	makeCarousel(senderId, bills);
 	    	  }
 	  		});
-	  		sendMessage(senderId, { text: 'keyword detected!'} );
 	  		break;
 	        case 'calendar': eventDb.getAllEvents(function (error, events) {
 	    	  if (error !== null) {
 	      	  	next(error);
-	      	  	sendMessage(senderID, { text: 'error'});
+	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	sendMessage(senderId, { text: JSON.stringify(events) });
 	    	  }
 	  		});
-	  		sendMessage(senderId, { text: 'keyword detected!'} );
 	        break;
 	        case 'create bill':
 	          billCreator = true;
@@ -121,6 +121,39 @@ function processMessage(event) {
       sendMessage(senderId, { text: "Sorry, I don't understand your request."} );
     }
   }
+}
+
+var makeCarousel = function (id, data) {
+  data.forEach(function (bill, index, array) {
+  	var item = {
+      title: bill.title,
+      subtitle: JSON.stringify(bill),
+      buttons: [{
+        type: "postback",
+        title: "Paid",
+        payload: "Delete"
+      }, {
+      	type: "postback",
+        title: "Edit",
+        payload: "Edit"
+      }]
+    }
+    eleArray.push(item);
+  });
+  makeTemplate(id, eleArray);
+}
+
+var makeTemplate = function (id, elements) {
+  var message = {
+    attachment: {
+      type: "template",
+      payload: {
+        template_type: "generic",
+        elements: elements
+      }
+    }
+  };
+  sendMessage(id, message);
 }
 
 // sends message to user
