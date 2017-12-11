@@ -89,7 +89,7 @@ function processMessage(event) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(bills) });
-	          	makeCarousel(senderId, bills);
+	          	billCarousel(senderId, bills);
 	    	  }
 	  		});
 	  		break;
@@ -98,7 +98,8 @@ function processMessage(event) {
 	      	  	next(error);
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
-	          	sendMessage(senderId, { text: JSON.stringify(events) });
+	          	// sendMessage(senderId, { text: JSON.stringify(events) });
+	          	eventCarousel(senderId, bills);
 	    	  }
 	  		});
 	        break;
@@ -123,12 +124,33 @@ function processMessage(event) {
   }
 }
 
-var makeCarousel = function (id, data) {
+var billCarousel = function (id, data) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
   	var item = {
       title: bill.title,
-      subtitle: JSON.stringify(bill),
+      subtitle: "creator: " + bill.creator + ", amount: " + bill.amount + ", per person: " + bill.per_person,
+      buttons: [{
+        type: "postback",
+        title: "Paid",
+        payload: "Delete"
+      }, {
+      	type: "postback",
+        title: "Edit",
+        payload: "Edit"
+      }]
+    }
+    eleArray.push(item);
+  });
+  makeTemplate(id, eleArray);
+}
+
+var eventCarousel = function (id, data) {
+  var eleArray = [];
+  data.forEach(function (event, index, array) {
+  	var item = {
+      title: event.title,
+      subtitle: "creator: " + event.creator + ", date: " + event.date + ", time: " + event.time,
       buttons: [{
         type: "postback",
         title: "Paid",
