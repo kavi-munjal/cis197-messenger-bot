@@ -99,7 +99,7 @@ function processMessage(event) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(events) });
-	          	eventCarousel(senderId, bills);
+	          	eventCarousel(senderId, events);
 	    	  }
 	  		});
 	        break;
