@@ -124,6 +124,7 @@ function processMessage(event) {
 }
 
 var makeCarousel = function (id, data) {
+  var eleArray = [];
   data.forEach(function (bill, index, array) {
   	var item = {
       title: bill.title,
