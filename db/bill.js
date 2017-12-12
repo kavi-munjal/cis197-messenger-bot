@@ -15,7 +15,7 @@ module.exports = {
   },
 
   deleteBill: function(id, callback) {
-    mongo.billDb.deleteOne(function (error) {
+    mongo.billDb.deleteOne(id, function (error) {
       callback(error);
     });
   }
