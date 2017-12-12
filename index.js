@@ -50,7 +50,9 @@ var processPostback = function (event) {
 }
 
 var billCreator = false;
-var eventCreator = false; 
+var title = false;
+var eventCreator = false;
+var newItem = {}; 
 function processMessage(event) {
   if (!event.message.is_echo) {
     var message = event.message;
@@ -60,16 +62,27 @@ function processMessage(event) {
     console.log('Message is: ' + JSON.stringify(message));
 
     if (message.text) {
+      var formattedMsg = message.text.toLowerCase().trim();
       if (billCreator) {
-      	billDb.addBill(JSON.parse(message.text), function (err) {
-	      if (err !== null) {
-	      	next(err);
-	      	sendMessage(senderId, { text: 'error'});
-	      } else {
-	      	sendMessage(senderId, { text: 'success!' });
-	      }
-	    });
-      	billCreator = false;
+      	if (formattedMsg === 'cancel') {
+      	  billCreator = false;
+      	  newItem = {};
+      	  sendMessage(senderId, { text: 'cancelled'});
+      	} else if (title) {
+      	  createTitle(senderId, message)
+      	} else {
+      	  newItem.amount = message.text;
+      	  newItem.per_person = newItem.amount;
+      	  billDb.addBill(newItem, function (err) {
+	      	if (err !== null) {
+	      	  next(err);
+	      	  sendMessage(senderId, { text: 'error'});
+	        } else {
+	      	  sendMessage(senderId, { text: 'success!' });
+	        }
+	      });
+	      billCreator = false;
+      	}
       } else if (eventCreator) {
       	eventDb.addEvent(JSON.parse(message.text), function (err) {
 	      if (err !== null) {
@@ -81,7 +94,6 @@ function processMessage(event) {
 	    });
       	eventCreator = false;
       } else {
-      	  var formattedMsg = message.text.toLowerCase().trim();
 	      switch (formattedMsg) {
 	        case 'bills': billDb.getAllBills(function (error, bills) {
 	    	  if (error !== null) {
@@ -89,7 +101,7 @@ function processMessage(event) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(bills) });
-	          	billCarousel(senderId, bills);
+	          	billCarousel(senderId, bills, makeTemplate);
 	    	  }
 	  		});
 	  		break;
@@ -99,23 +111,28 @@ function processMessage(event) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(events) });
-	          	eventCarousel(senderId, events);
+	          	eventCarousel(senderId, events, makeTemplate);
 	    	  }
 	  		});
 	        break;
 	        case 'create bill':
 	          billCreator = true;
-	       	  var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
-	          sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
+	          title = true;
+	       	  // var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
+	          sendMessage(senderId, { text: "Enter title or 'cancel'" } );
 	        break;
 	        case 'create event': 
 	          eventCreator = true;
 	          var form = JSON.stringify({ "creator": "", "title": "", "date": "", "time": "" });
 	       	  sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
 	          break;
+	        case 'cancel': sendMessage(senderId, { text: 
+	        	"Try 'create event', 'create bill', 'calendar' or 'bills'" } );
+	          break;
 
 	        default:
-	          sendMessage(senderId, { text: "I'm not smart enough to respond to that... yet!"} );
+	          sendMessage(senderId, { text: "I'm not smart enough to respond to that... yet!" + 
+	          	"Try 'create event', 'create bill', 'calendar' or 'bills'" } );
 	      }
 	  }
     } else if (message.attachments) {
@@ -124,7 +141,27 @@ function processMessage(event) {
   }
 }
 
-var billCarousel = function (id, data) {
+var createTitle = function (id, message) {
+  request({
+    url: 'https://graph.facebook.com/v2.6/' + id,
+    qs: {
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      fields: 'first_name'
+    },
+    method: 'GET'
+  }, function (error, response, body) {
+    if (error) {
+      console.log("Error getting user's name: " +  error);
+    } else {
+      var bodyObj = JSON.parse(body);
+      newItem.creator = bodyObj.first_name;
+    }
+  });
+  newItem.title = message.text;
+  title = false;
+}
+
+var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
   	var item = {
@@ -142,10 +179,10 @@ var billCarousel = function (id, data) {
     }
     eleArray.push(item);
   });
-  makeTemplate(id, eleArray);
+  callback(id, eleArray);
 }
 
-var eventCarousel = function (id, data) {
+var eventCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (event, index, array) {
   	var item = {
@@ -153,17 +190,17 @@ var eventCarousel = function (id, data) {
       subtitle: "creator: " + event.creator + ", date: " + event.date + ", time: " + event.time,
       buttons: [{
         type: "postback",
-        title: "Paid",
-        payload: "Delete"
-      }, {
-      	type: "postback",
         title: "Edit",
         payload: "Edit"
+      }, {
+      	type: "postback",
+        title: "Delete",
+        payload: "Delete"
       }]
     }
     eleArray.push(item);
   });
-  makeTemplate(id, eleArray);
+  callback(id, eleArray);
 }
 
 var makeTemplate = function (id, elements) {
