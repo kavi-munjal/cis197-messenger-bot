@@ -21,8 +21,7 @@ var billSchema = new mongoose.Schema({
 var eventSchema = new mongoose.Schema({
   creator: String,
   title: String,
-  date: String,
-  time: String
+  date: Date,
 });
 
 var Bill = mongoose.model('Bill', billSchema);

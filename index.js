@@ -93,10 +93,9 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
       	  createTitle(senderId, message);
-      	  sendMessage(senderId, { text: "Enter date or 'cancel'" });
+      	  sendMessage(senderId, { text: "Enter date as MM/DD/YYYY h:mm or 'cancel'" });
       	} else {
-      	  newItem.date = message.text;
-      	  newItem.time = newItem.date;
+      	  newItem.date = moment(message.text, "MM/DD/YYYY h:mm").format();
       	  eventDb.addEvent(newItem, function (err) {
 	        if (err !== null) {
 	      	  sendMessage(senderId, { text: 'error'});
@@ -198,9 +197,10 @@ var billCarousel = function (id, data, callback) {
 var eventCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (event, index, array) {
+  	var date = moment.tz(event.date, "America/New_York").format('lll');
   	var item = {
       title: event.title,
-      subtitle:  "Date: " + event.date + "\nCreator: " + event.creator + ", time: " + event.time,
+      subtitle: date + "\nCreator: " + event.creator,
       buttons: [{
         type: "postback",
         title: "Edit",
