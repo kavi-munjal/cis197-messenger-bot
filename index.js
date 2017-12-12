@@ -53,10 +53,10 @@ var processPostback = function (event) {
 
   if (payload.includes('Delete Bill')) {
   	var billId = payload.slice(12);
-  	console.log(billId);
   	var query = {};
-  	query.title = 'i';
-  	billDb.deleteBill(query, function (err) {
+  	query._id = billId;
+  	billDb.deleteAll();
+  	billDb.deleteBill(billId, function (err) {
   		if (err !== null) {
   		  sendMessage(senderId, { text: "error" });
   		} else {
