@@ -2,6 +2,7 @@ var express = require('express');
 var request = require('request');
 var app = express();
 var bodyParser = require('body-parser');
+var moment = require('moment-timezone')
 
 var billDb = require('./db/bill');
 var eventDb = require('./db/event');
@@ -70,7 +71,7 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
       	  createTitle(senderId, message);
-      	  newItem.createdAt = Date.now();
+      	  newItem.createdAt = moment.tz(Date.now(), 'America/New_York').format();
       	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
       	  newItem.amount = message.text;
@@ -182,7 +183,7 @@ var billCarousel = function (id, data, callback) {
   	var item = {
       title: bill.title + "\nAmount: " + bill.amount,
       subtitle: "Per Person: " + bill.per_person + "\nCreator: " + bill.creator + 
-      "\nCreated: " + date.toDateString(),
+      "\nCreated: " + bill.createdAt,
       buttons: [{
         type: "postback",
         title: "Paid",
