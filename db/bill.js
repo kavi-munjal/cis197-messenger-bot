@@ -15,7 +15,7 @@ module.exports = {
   },
 
   deleteAll: function () {
-    mongo.billDb.remove({});
+    mongo.Bill.remove({});
     console.log('yes');
   },
 

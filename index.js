@@ -56,7 +56,7 @@ var processPostback = function (event) {
   	var query = {};
   	query._id = billId;
   	billDb.deleteAll();
-  	billDb.deleteBill(billId, function (err) {
+  	billDb.deleteBill(query, function (err) {
   		if (err !== null) {
   		  sendMessage(senderId, { text: "error" });
   		} else {
