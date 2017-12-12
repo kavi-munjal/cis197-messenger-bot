@@ -12,7 +12,7 @@ module.exports = {
     bill.save(function (error) {
       callback(error);
     });
-  }
+  },
 
   deleteBill: function(id, callback) {
     mongo.billDb.deletOne(function (error) {
