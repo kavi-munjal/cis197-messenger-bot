@@ -3,6 +3,7 @@ var request = require('request');
 var app = express();
 var bodyParser = require('body-parser');
 var moment = require('moment-timezone')
+moment.tz.setDefault("America/New_York");
 
 var billDb = require('./db/bill');
 var eventDb = require('./db/event');
@@ -71,7 +72,6 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
       	  createTitle(senderId, message);
-      	  console.log(moment().format());
       	  newItem.createdAt = moment().format();
       	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
@@ -93,8 +93,9 @@ function processMessage(event) {
       	  newItem = {};
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
+      	  console.log(moment().format());
       	  createTitle(senderId, message);
-      	  sendMessage(senderId, { text: "Enter date as MM/DD/YYYY h:mm or 'cancel'" });
+      	  sendMessage(senderId, { text: "Enter date as MM/DD/YYYY h:mm am/pm or 'cancel'" });
       	} else {
       	  var date = moment(message.text, "MM/DD/YYYY h:mm a").format();
       	  newItem.date = moment.tz(date, "America/New_York").format();
