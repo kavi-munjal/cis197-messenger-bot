@@ -133,13 +133,11 @@ function processMessage(event) {
 	        case 'create bill':
 	          billCreator = true;
 	          title = true;
-	       	  // var form = JSON.stringify({ "creator": "", "title": "", "amount": 0, "per_person": 0 });
 	          sendMessage(senderId, { text: "Enter title or 'cancel'" } );
 	        break;
 	        case 'create event': 
 	          eventCreator = true;
 	          title = true;
-	          // var form = JSON.stringify({ "creator": "", "title": "", "date": "", "time": "" });
 	       	  sendMessage(senderId, { text: "Enter title or 'cancel'" } );
 	          break;
 	        case 'cancel': sendMessage(senderId, { text: 
@@ -181,8 +179,8 @@ var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
   	var item = {
-      title: bill.title + ", amount: " + bill.amount,
-      subtitle: "per person: " + bill.per_person + "creator: " + bill.creator + ", created: " + bill.createdAt,
+      title: bill.title + "/nAmount: " + bill.amount,
+      subtitle: "Per Person: " + bill.per_person + ", Creator: " + bill.creator + "/nCreated: " + bill.createdAt,
       buttons: [{
         type: "postback",
         title: "Paid",
@@ -220,16 +218,20 @@ var eventCarousel = function (id, data, callback) {
 }
 
 var makeTemplate = function (id, elements) {
-  var message = {
-    attachment: {
-      type: "template",
-      payload: {
-        template_type: "generic",
-        elements: elements
+  if (elements.length !== 0) {
+  	var message = {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: elements
+        }
       }
-    }
-  };
-  sendMessage(id, message);
+    };
+    sendMessage(id, message);
+  } else {
+  	sendMessage(id, { text: 'Nothing to show right now' });
+  }
 }
 
 // sends message to user
@@ -250,7 +252,7 @@ var sendMessage = function (recipientId, message) {
 }
 
 
-app.post('/webhook', function (req, res) {  
+app.post('/webhook', function (req, res, next) {  
 
   if (req.body.object === 'page') {
 
@@ -271,9 +273,7 @@ app.post('/webhook', function (req, res) {
   }
 });
 
-app.get('/webhook', function (req, res) {
-
-  // var VERIFY_TOKEN = 'KAVI'
+app.get('/webhook', function (req, res, next) {
     
   var mode = req.query['hub.mode'];
   var token = req.query['hub.verify_token'];
