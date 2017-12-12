@@ -78,7 +78,6 @@ function processMessage(event) {
       	  newItem.per_person = newItem.amount;
       	  billDb.addBill(newItem, function (err) {
 	      	if (err !== null) {
-	      	  next(err);
 	      	  sendMessage(senderId, { text: 'error'});
 	        } else {
 	      	  sendMessage(senderId, { text: 'success!' });
@@ -100,7 +99,6 @@ function processMessage(event) {
       	  newItem.time = newItem.date;
       	  eventDb.addEvent(newItem, function (err) {
 	        if (err !== null) {
-	      	  next(err);
 	      	  sendMessage(senderId, { text: 'error'});
 	        } else {
 	      	  sendMessage(senderId, { text: 'success!' });
@@ -113,7 +111,6 @@ function processMessage(event) {
 	      switch (formattedMsg) {
 	        case 'bills': billDb.getAllBills(function (error, bills) {
 	    	  if (error !== null) {
-	      	  	next(error);
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(bills) });
@@ -123,7 +120,6 @@ function processMessage(event) {
 	  		break;
 	        case 'calendar': eventDb.getAllEvents(function (error, events) {
 	    	  if (error !== null) {
-	      	  	next(error);
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
 	          	// sendMessage(senderId, { text: JSON.stringify(events) });
@@ -179,10 +175,10 @@ var createTitle = function (id, message) {
 var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
-  	var date = moment.tz(bill.createdAt, "America/New_York").format('MMMM Do YYYY, h:mm a');
+  	var date = moment.tz(bill.createdAt, "America/New_York").format('lll');
   	var item = {
-      title: bill.title + " - Amount: " + bill.amount,
-      subtitle: "Per Person: " + bill.per_person + "\nCreator: " + bill.creator + 
+      title: bill.title,
+      subtitle: "Amount: " + bill.amount + "\nCreator: " + bill.creator + 
       "\nCreated: " + date,
       buttons: [{
         type: "postback",

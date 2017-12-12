@@ -16,7 +16,6 @@ var billSchema = new mongoose.Schema({
   createdAt: Date,
   title: String,
   amount: Number,
-  per_person: Number
 });
 
 var eventSchema = new mongoose.Schema({
