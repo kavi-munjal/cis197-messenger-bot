@@ -179,11 +179,11 @@ var createTitle = function (id, message) {
 var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
-  	// var date = moment.tz(bill.createdAt, "America/New_York").format();
+  	var date = moment.tz(bill.createdAt, "America/New_York").format('MMMM Do YYYY, h:mm a');
   	var item = {
       title: bill.title + " - Amount: " + bill.amount,
       subtitle: "Per Person: " + bill.per_person + "\nCreator: " + bill.creator + 
-      "\nCreated: " + bill.createdAt,
+      "\nCreated: " + date,
       buttons: [{
         type: "postback",
         title: "Paid",
