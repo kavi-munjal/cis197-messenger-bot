@@ -12,5 +12,11 @@ module.exports = {
     event.save(function (error) {
       callback(error);
     });
+  },
+
+  deleteEvent: function (id, callback) {
+    mongo.eventDb.deleteOne(id, function (error) {
+      callback(error);
+    });
   }
 };

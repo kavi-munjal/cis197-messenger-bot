@@ -49,13 +49,10 @@ var processPostback = function (event) {
       'The commands are create event, create bill, calendar, and bills';
       sendMessage(senderId, { text: message });
     });
-  }
-
-  if (payload.includes('Delete Bill')) {
+  } else if (payload.includes('Delete Bill')) {
   	var billId = payload.slice(12);
   	var query = {};
   	query._id = billId;
-  	billDb.deleteAll();
   	billDb.deleteBill(query, function (err) {
   		if (err !== null) {
   		  sendMessage(senderId, { text: "error" });
@@ -63,6 +60,18 @@ var processPostback = function (event) {
   		  sendMessage(senderId, { text: "bill paid" });
   		}
   	});
+  } else if (payload.includes('Delete Event')) {
+  	var eventId = payload.slice(13);
+  	var query = {};
+  	query._id = eventId;
+  	eventDb.deleteBill(query, function (err) {
+  		if (err !== null) {
+  		  sendMessage(senderId, { text: "error" });
+  		} else {
+  		  sendMessage(senderId, { text: "event deleted" });
+  		}
+  	});
+  }
   }
 }
 
