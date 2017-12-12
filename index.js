@@ -71,6 +71,7 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
       	  createTitle(senderId, message);
+      	  console.log(moment().format());
       	  newItem.createdAt = moment().format();
       	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
@@ -95,7 +96,8 @@ function processMessage(event) {
       	  createTitle(senderId, message);
       	  sendMessage(senderId, { text: "Enter date as MM/DD/YYYY h:mm or 'cancel'" });
       	} else {
-      	  newItem.date = moment(message.text, "MM/DD/YYYY h:mm").format();
+      	  var date = moment(message.text, "MM/DD/YYYY h:mm a").format();
+      	  newItem.date = moment.tz(date, "America/New_York").format();
       	  eventDb.addEvent(newItem, function (err) {
 	        if (err !== null) {
 	      	  sendMessage(senderId, { text: 'error'});
