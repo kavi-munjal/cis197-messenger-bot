@@ -13,4 +13,10 @@ module.exports = {
       callback(error);
     });
   }
+
+  deleteBill: function(id, callback) {
+    mongo.billDb.deletOne(function (error) {
+      callback(error);
+    });
+  }
 };

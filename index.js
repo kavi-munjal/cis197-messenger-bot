@@ -49,6 +49,17 @@ var processPostback = function (event) {
       sendMessage(senderId, { text: message });
     });
   }
+
+  if (payload.includes('Delete Bill')) {
+  	var billId = payload.slice(12);
+  	console.log(billId);
+  	billDb.deleteBill({ "_id" : billId }, function (err) {
+  		if (err !== null) {
+  		  sendMessage(senderId, { text: "error"});
+  		}
+  		  sendMessage(senderId, { text: "bill paid"});
+  	});
+  }
 }
 
 var billCreator = false;
@@ -81,7 +92,7 @@ function processMessage(event) {
 	      	if (err !== null) {
 	      	  sendMessage(senderId, { text: 'error'});
 	        } else {
-	      	  sendMessage(senderId, { text: 'success!' });
+	      	  sendMessage(senderId, { text: 'bill added' });
 	        }
 	      });
 	      billCreator = false;
@@ -103,7 +114,7 @@ function processMessage(event) {
 	        if (err !== null) {
 	      	  sendMessage(senderId, { text: 'error'});
 	        } else {
-	      	  sendMessage(senderId, { text: 'success!' });
+	      	  sendMessage(senderId, { text: 'event added' });
 	        }
 	      });	      
 	      eventCreator = false;
@@ -185,11 +196,7 @@ var billCarousel = function (id, data, callback) {
       buttons: [{
         type: "postback",
         title: "Paid",
-        payload: "Delete"
-      }, {
-      	type: "postback",
-        title: "Edit",
-        payload: "Edit"
+        payload: "Delete Bill " + bill._id
       }]
     }
     eleArray.push(item);
@@ -203,12 +210,8 @@ var eventCarousel = function (id, data, callback) {
   	var date = moment.tz(event.date, "America/New_York").format('lll');
   	var item = {
       title: event.title,
-      subtitle: event.date + "\nCreator: " + event.creator,
+      subtitle: date + "\nCreator: " + event.creator,
       buttons: [{
-        type: "postback",
-        title: "Edit",
-        payload: "Edit"
-      }, {
       	type: "postback",
         title: "Delete",
         payload: "Delete"
