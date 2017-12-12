@@ -13,6 +13,7 @@ var db = mongoose.connection;
 
 var billSchema = new mongoose.Schema({
   creator: String,
+  createdAt: Date,
   title: String,
   amount: Number,
   per_person: Number

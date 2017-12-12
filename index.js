@@ -69,7 +69,9 @@ function processMessage(event) {
       	  newItem = {};
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
-      	  createTitle(senderId, message)
+      	  createTitle(senderId, message);
+      	  newItem.createdAt = Date.now();
+      	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
       	  newItem.amount = message.text;
       	  newItem.per_person = newItem.amount;
@@ -82,17 +84,30 @@ function processMessage(event) {
 	        }
 	      });
 	      billCreator = false;
+	      newItem = {};
       	}
       } else if (eventCreator) {
-      	eventDb.addEvent(JSON.parse(message.text), function (err) {
-	      if (err !== null) {
-	      	next(err);
-	      	sendMessage(senderId, { text: 'error'});
-	      } else {
-	      	sendMessage(senderId, { text: 'success!' });
-	      }
-	    });
-      	eventCreator = false;
+      	if (formattedMsg === 'cancel') {
+      	  eventCreator = false;
+      	  newItem = {};
+      	  sendMessage(senderId, { text: 'cancelled'});
+      	} else if (title) {
+      	  createTitle(senderId, message);
+      	  sendMessage(senderId, { text: "Enter date or 'cancel'" });
+      	} else {
+      	  newItem.date = message.text;
+      	  newItem.time = newItem.date;
+      	  eventDb.addEvent(newItem, function (err) {
+	        if (err !== null) {
+	      	  next(err);
+	      	  sendMessage(senderId, { text: 'error'});
+	        } else {
+	      	  sendMessage(senderId, { text: 'success!' });
+	        }
+	      });	      
+	      eventCreator = false;
+	      newItem = {};
+      	}
       } else {
 	      switch (formattedMsg) {
 	        case 'bills': billDb.getAllBills(function (error, bills) {
@@ -123,15 +138,16 @@ function processMessage(event) {
 	        break;
 	        case 'create event': 
 	          eventCreator = true;
-	          var form = JSON.stringify({ "creator": "", "title": "", "date": "", "time": "" });
-	       	  sendMessage(senderId, { text: 'Copy and paste and add details in form ' + form } );
+	          title = true;
+	          // var form = JSON.stringify({ "creator": "", "title": "", "date": "", "time": "" });
+	       	  sendMessage(senderId, { text: "Enter title or 'cancel'" } );
 	          break;
 	        case 'cancel': sendMessage(senderId, { text: 
 	        	"Try 'create event', 'create bill', 'calendar' or 'bills'" } );
 	          break;
 
 	        default:
-	          sendMessage(senderId, { text: "I'm not smart enough to respond to that... yet!" + 
+	          sendMessage(senderId, { text: "I'm not smart enough to respond to that... yet! " + 
 	          	"Try 'create event', 'create bill', 'calendar' or 'bills'" } );
 	      }
 	  }
