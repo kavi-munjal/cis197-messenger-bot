@@ -54,7 +54,9 @@ var processPostback = function (event) {
   if (payload.includes('Delete Bill')) {
   	var billId = payload.slice(12);
   	console.log(billId);
-  	billDb.deleteBill({}, function (err) {
+  	var query = {};
+  	query.title = 'i';
+  	billDb.deleteBill(query, function (err) {
   		if (err !== null) {
   		  sendMessage(senderId, { text: "error" });
   		} else {
@@ -106,7 +108,6 @@ function processMessage(event) {
       	  newItem = {};
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
-      	  console.log(moment().format());
       	  createTitle(senderId, message);
       	  sendMessage(senderId, { text: "Enter date as MM/DD/YYYY h:mm am/pm or 'cancel'" });
       	} else {
