@@ -181,8 +181,8 @@ var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
   	var item = {
-      title: bill.title,
-      subtitle: "creator: " + bill.creator + ", amount: " + bill.amount + ", per person: " + bill.per_person,
+      title: bill.title + ", amount: " + bill.amount,
+      subtitle: "per person: " + bill.per_person + "creator: " + bill.creator + ", created: " + bill.createdAt,
       buttons: [{
         type: "postback",
         title: "Paid",
