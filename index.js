@@ -20,15 +20,49 @@ app.get('/', function (req, res) {
   res.send('Deployed!');
 });
 
+app.get('/webhook', function (req, res, next) {
+    
+  var mode = req.query['hub.mode'];
+  var token = req.query['hub.verify_token'];
+  var challenge = req.query['hub.challenge'];
+  
+  if (mode === 'subscribe' && token === process.env.VERIFICATION_TOKEN) {
+    
+    console.log('WEBHOOK_VERIFIED');
+    res.status(200).send(challenge);
+    
+  } else {
+    res.sendStatus(403);      
+  }
+});
+
+app.post('/webhook', function (req, res, next) {  
+
+  if (req.body.object === 'page') {
+
+    req.body.entry.forEach(function (entry) {
+
+      entry.messaging.forEach(function (event) {
+        if (event.postback) {
+          processPostback(event);
+        } else if (event.message) {
+          processMessage(event);
+        }
+      });
+    });
+
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 
 var processPostback = function (event) {
   var senderId = event.sender.id;
   var payload = event.postback.payload;
-  console.log(payload);
 
   if (payload === 'Greeting') {
-    // Get user's first name from the User Profile API
-    // and include it in the greeting
     request({
       url: 'https://graph.facebook.com/v2.6/' + senderId,
       qs: {
@@ -99,7 +133,6 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
       	  newItem.amount = message.text;
-      	  newItem.per_person = newItem.amount;
       	  billDb.addBill(newItem, function (err) {
 	      	if (err !== null) {
 	      	  sendMessage(senderId, { text: 'error'});
@@ -137,7 +170,6 @@ function processMessage(event) {
 	    	  if (error !== null) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
-	          	// sendMessage(senderId, { text: JSON.stringify(bills) });
 	          	billCarousel(senderId, bills, makeTemplate);
 	    	  }
 	  		});
@@ -146,7 +178,6 @@ function processMessage(event) {
 	    	  if (error !== null) {
 	      	  	sendMessage(senderId, { text: 'error'});
 	    	  } else {
-	          	// sendMessage(senderId, { text: JSON.stringify(events) });
 	          	eventCarousel(senderId, events, makeTemplate);
 	    	  }
 	  		});
@@ -225,7 +256,7 @@ var eventCarousel = function (id, data, callback) {
       buttons: [{
       	type: "postback",
         title: "Delete",
-        payload: "Delete"
+        payload: "Delete Event " + event._id
       }]
     }
     eleArray.push(item);
@@ -266,43 +297,5 @@ var sendMessage = function (recipientId, message) {
     }
   });
 }
-
-
-app.post('/webhook', function (req, res, next) {  
-
-  if (req.body.object === 'page') {
-
-    req.body.entry.forEach(function (entry) {
-
-      entry.messaging.forEach(function (event) {
-        if (event.postback) {
-          processPostback(event);
-        } else if (event.message) {
-          processMessage(event);
-        }
-      });
-    });
-
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(404);
-  }
-});
-
-app.get('/webhook', function (req, res, next) {
-    
-  var mode = req.query['hub.mode'];
-  var token = req.query['hub.verify_token'];
-  var challenge = req.query['hub.challenge'];
-  
-  if (mode === 'subscribe' && token === process.env.VERIFICATION_TOKEN) {
-    
-    console.log('WEBHOOK_VERIFIED');
-    res.status(200).send(challenge);
-    
-  } else {
-    res.sendStatus(403);      
-  }
-});
 
 module.exports = app;
