@@ -183,7 +183,7 @@ var billCarousel = function (id, data, callback) {
   	var item = {
       title: bill.title + " \nAmount: " + bill.amount,
       subtitle: "Per Person: " + bill.per_person + "\nCreator: " + bill.creator + 
-      "\nCreated: " + date,
+      "\nCreated: " + Date.toString(date),
       buttons: [{
         type: "postback",
         title: "Paid",
@@ -204,7 +204,7 @@ var eventCarousel = function (id, data, callback) {
   data.forEach(function (event, index, array) {
   	var item = {
       title: event.title,
-      subtitle: "creator: " + event.creator + ", date: " + event.date + ", time: " + event.time,
+      subtitle:  "Date: " + event.date + "\nCreator: " + event.creator + ", time: " + event.time,
       buttons: [{
         type: "postback",
         title: "Edit",
