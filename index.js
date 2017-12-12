@@ -72,7 +72,6 @@ var processPostback = function (event) {
   		}
   	});
   }
-  }
 }
 
 var billCreator = false;
