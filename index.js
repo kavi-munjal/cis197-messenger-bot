@@ -200,7 +200,7 @@ var eventCarousel = function (id, data, callback) {
   	var date = moment.tz(event.date, "America/New_York").format('lll');
   	var item = {
       title: event.title,
-      subtitle: date + "\nCreator: " + event.creator,
+      subtitle: event.date + "\nCreator: " + event.creator,
       buttons: [{
         type: "postback",
         title: "Edit",
