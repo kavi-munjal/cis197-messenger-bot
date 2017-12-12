@@ -71,7 +71,7 @@ function processMessage(event) {
       	  sendMessage(senderId, { text: 'cancelled'});
       	} else if (title) {
       	  createTitle(senderId, message);
-      	  newItem.createdAt = Date.now();
+      	  newItem.createdAt = moment().format();
       	  sendMessage(senderId, { text: "Enter amount or 'cancel'" });
       	} else {
       	  newItem.amount = message.text;
@@ -179,11 +179,11 @@ var createTitle = function (id, message) {
 var billCarousel = function (id, data, callback) {
   var eleArray = [];
   data.forEach(function (bill, index, array) {
-  	var date = moment.tz(bill.createdAt, "America/New_York").format();
+  	// var date = moment.tz(bill.createdAt, "America/New_York").format();
   	var item = {
-      title: bill.title + " \nAmount: " + bill.amount,
+      title: bill.title + " - Amount: " + bill.amount,
       subtitle: "Per Person: " + bill.per_person + "\nCreator: " + bill.creator + 
-      "\nCreated: " + Date.toString(date),
+      "\nCreated: " + bill.createdAt,
       buttons: [{
         type: "postback",
         title: "Paid",
